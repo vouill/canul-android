@@ -1,7 +1,18 @@
 <resources>
-    <string name="app_name">Android</string>
-    <string name="title_activity_index">IndexActivity</string>
-
-    <string name="hello_world">Hello world!</string>
+    <!-- Global -->
+    <string name="app_name">My Application</string>
     <string name="action_settings">Settings</string>
+
+    <!-- Main / Login -->
+    <string name="header">Canul</string>
+    <string name="username">Nom d\'utilisateur!</string>
+    <string name="password">Mot de passe!</string>
+    <string name="submit">Valider</string>
+    <string name="reset">Annuler</string>
+    <string name="form_reset">Form elements reset.</string>
+    <string name="login_success">Login Successful.</string>
+    <string name="login_error">Login Failed.</string>
+    <string name="title_activity_dashboard">DashboardActivity</string>
+    <!-- Dashboard -->
+    <string name="welcome_msg">Hello %1$s, how are you today?</string>
 </resources>
