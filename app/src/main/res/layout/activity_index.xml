@@ -12,35 +12,14 @@
         android:text="@string/header"
         android:textSize="30sp" />
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
 
-        android:layout_below="@+id/header"
-        android:paddingEnd="10dp"
-        android:paddingStart="10dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:dividerPadding="20dp"
-            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:text="coucou"
-                android:id="@+id/myText"/>
-
-            <ListView
-                android:id="@android:id/list"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"/>
-
-        </LinearLayout>
-    </ScrollView>
-
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/header" />
 
 
 
