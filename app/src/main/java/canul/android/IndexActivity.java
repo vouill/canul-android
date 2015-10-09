@@ -14,8 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import android.widget.EditText;
-
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -37,16 +35,19 @@ import java.util.HashMap;
 
 public class IndexActivity extends ListActivity {
 
-    private static final String DEBUG_TAG = "HttpExample";
-    private static final String AUTHENTICATE_URL = "http://dev.canul.fr/api/authenticate";
+    private static final String BASE_URL = "http://dev.canul.fr/api/";
+    private static final String AUTHENTICATE_URL = "authenticate";
+    private static final String ARTICLES_URL = "articles";
+
     private static final String TOKEN = "token";
     private static final String SUCCESS = "success";
+    private static final String MESSAGE = "message";
+    private static final String ARTICLES = "articles";
     private static final String TAG = "IndexActivity";
-    private EditText urlText;
 
     private TextView textView;
     private ProgressBar progressBar;
-    String stringUrlArticles = "http://dev.canul.fr/api/articles";
+
 
     ListView list;
     private static final String TAG_TITLE = "title";
@@ -59,7 +60,6 @@ public class IndexActivity extends ListActivity {
 
     private AuthenticateTask authenticateTask;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,18 +67,18 @@ public class IndexActivity extends ListActivity {
 
         oslist = new ArrayList<HashMap<String, String>>();
 
-
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        Log.v(TAG, "asks for tokens");
 
-        ConnectivityManager connMgr = (ConnectivityManager)
-        getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if(isConnected())
+            new DownloadArticlesListTask().execute();
+        else
+            textView.setText("No network connection available.");
 
-        if (networkInfo != null && networkInfo.isConnected()) {
-          /* Creates & executes an authenticateTask */
-          new AuthenticateTask().execute();
-            if()
-            new DownloadWebpageTask().execute();
+        if (isConnected()) {
+            /* Creates & executes an authenticateTask */
+            new AuthenticateTask().execute();
+            new DownloadArticlesListTask().execute();
         } else
             textView.setText("No network connection available.");
 
@@ -109,6 +109,17 @@ public class IndexActivity extends ListActivity {
 
     }
 
+    public boolean isConnected(){
+        ConnectivityManager manager = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
+    }
+
+    public boolean isSucceed(JSONObject json) throws JSONException{
+        return json.getBoolean(SUCCESS);
+    }
+
     public class AuthenticateTask extends AsyncTask<String, Void, String> {
 
         @Override
@@ -123,9 +134,16 @@ public class IndexActivity extends ListActivity {
                     .add("password", "password")
                     .build();
 
+            /* Creates Authentication URL */
+            String url = new StringBuilder()
+                    .append(BASE_URL)
+                    .append(AUTHENTICATE_URL)
+                    .toString();
+
+
             /* Creates & sends the POST request */
             Request request = new Request.Builder()
-                    .url(AUTHENTICATE_URL)
+                    .url(url)
                     .post(body)
                     .build();
 
@@ -141,46 +159,27 @@ public class IndexActivity extends ListActivity {
                 Boolean success = json.getBoolean(SUCCESS);
 
                 if (success){
+                    /* Adds token to the authentication object */
                     String token = json.getString(TOKEN);
                     Authentication.init(token);
-                    Log.v(TAG, Authentication.getToken());
                 } else {
-
+                    /* Prints the error message */
+                    Log.v(TAG, json.getString(MESSAGE));
                 }
 
-                Log.v(TAG, string);
             } catch (IOException e) {
                   e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-
             return null;
         }
     }
 
 
-    public class GetJson {
-        OkHttpClient client = new OkHttpClient();
-
-        String run(String url) throws IOException {
-            Request request = new Request.Builder()
-                    .url(url)
-                    .header("x-access-token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoidXNlciIsInBhc3N3b3JkIjoicGFzc3dvcmQiLCJhZG1pbiI6ZmFsc2UsIl9pZCI6IjU2MTY3ZjMyZjI5YTBkNTc0ZTAyZTk0YyIsIl9fdiI6MH0.n_Wve4X-nN4yZ5z9ratiT4cVI7aV0A8shXT9WMHEVl8")
-                    .build();
-
-            Response response = client.newCall(request).execute();
-            return response.body().string();
-        }
-    }
-
-    class DownloadWebpageTask extends AsyncTask<String, Void, String> {
+    class DownloadArticlesListTask extends AsyncTask<String, Void, String> {
 
 
-        private static final String DEBUG_TAG = "HttpExample";
-        private static final String TAG = "MyActivity";
         private String intermediate;
 
         // JSON Node names
@@ -189,54 +188,75 @@ public class IndexActivity extends ListActivity {
         // contacts JSONArray
         JSONArray articles = null;
 
-
-
-
-
         @Override
         protected void onPreExecute() {
             // Here, show progress bar
             progressBar.setVisibility(View.VISIBLE);
+
+            if(null == Authentication.getToken()) {
+                if(isConnected()) {
+                    Log.v(TAG, "Authentication");
+                    new AuthenticateTask().execute();
+                } else {
+                    textView.setText("No Network");
+                }
+            }
         }
 
 
         @Override
         protected String doInBackground(String... urls) {
-            GetJson example = new GetJson();
-            String response = null;
 
+            String token = Authentication.getToken();
+            Log.v(TAG, token);
+
+            /* Creates Http Client */
+            OkHttpClient client = new OkHttpClient();
+
+
+            /* Creates Authentication URL */
+            String url = new StringBuilder()
+                    .append(BASE_URL)
+                    .append(ARTICLES_URL)
+                    .toString();
+
+
+            /* Creates & sends the POST request */
+            Request request = new Request.Builder()
+                    .url(url)
+                    .header("x-access-token", token)
+                    .build();
+
+            /* Sends the request */
             try {
-                String url = "http://dev.canul.fr/api/articles";
-                response = example.run(url);
-                Thread.sleep(2000);
+                Response response = client.newCall(request).execute();
+                String string = response.body().string();
+                JSONObject json = new JSONObject(string);
+                if(isSucceed(json)){
+                    Log.v(TAG, json.getJSONArray(ARTICLES).toString());
+                    jsonStr = string;
+                }
+                Log.v(TAG, json.toString());
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (InterruptedException e) {
+            } catch (JSONException e ) {
                 e.printStackTrace();
             }
 
-
-
-            //intermediate = String.valueOf(articles.length());
-            intermediate=response;
-            //intermediate=success;
-
-            return response;
+            return null;
         }
 
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
             String success=null;
-            jsonStr=intermediate;
 
 
             if (jsonStr != null) {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
 
-                    success =jsonObj.getString("success");
-                    articles = jsonObj.getJSONArray("articles");
+                    articles = jsonObj.getJSONArray(ARTICLES);
 
                     for(int i = 0; i < articles.length(); i++) {
                         JSONObject c = articles.getJSONObject(i);
@@ -265,16 +285,11 @@ public class IndexActivity extends ListActivity {
                     e.printStackTrace();
                 }
             }
+                progressBar.setVisibility(View.GONE);
 
-            progressBar.setVisibility(View.GONE);
+
             //textView.setText(intermediate);
 
         }
-
-
-
-
     }
-
-
 }

@@ -18,9 +18,9 @@ public class Authentication {
             instance = new Authentication(token);
         }
     }
-    public static String getToken() throws Exception{
+    public static String getToken(){
         if (instance ==  null) {
-            throw new Exception("No token has been provided");
+            return null;
         }
         return token;
     }
