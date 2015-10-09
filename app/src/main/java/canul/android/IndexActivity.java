@@ -58,8 +58,6 @@ public class IndexActivity extends ListActivity {
     ArrayList<HashMap<String, String>> oslist = new ArrayList<HashMap<String, String>>();
 
 
-    private AuthenticateTask authenticateTask;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,8 +74,7 @@ public class IndexActivity extends ListActivity {
             textView.setText("No network connection available.");
 
         if (isConnected()) {
-            /* Creates & executes an authenticateTask */
-            new AuthenticateTask().execute();
+            /* Creates & executes download task */
             new DownloadArticlesListTask().execute();
         } else
             textView.setText("No network connection available.");
@@ -120,11 +117,25 @@ public class IndexActivity extends ListActivity {
         return json.getBoolean(SUCCESS);
     }
 
-    public class AuthenticateTask extends AsyncTask<String, Void, String> {
+
+    class DownloadArticlesListTask extends AsyncTask<String, Void, String> {
+
+
+        private String intermediate;
+
+        // JSON Node names
+        //JSON DATA
+        private String jsonStr;
+        // contacts JSONArray
+        JSONArray articles = null;
 
         @Override
-        protected String doInBackground(String... params) {
+        protected void onPreExecute() {
+            // Here, show progress bar
+            progressBar.setVisibility(View.VISIBLE);
+        }
 
+        private void authenticate() {
             /* Creates Http Client */
             OkHttpClient client = new OkHttpClient();
 
@@ -156,7 +167,7 @@ public class IndexActivity extends ListActivity {
 
                 /* Parses the response body */
                 JSONObject json = new JSONObject(string);
-                Boolean success = json.getBoolean(SUCCESS);
+                boolean  success = json.getBoolean(SUCCESS);
 
                 if (success){
                     /* Adds token to the authentication object */
@@ -168,46 +179,20 @@ public class IndexActivity extends ListActivity {
                 }
 
             } catch (IOException e) {
-                  e.printStackTrace();
+                e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
-            }
-            return null;
-        }
-    }
-
-
-    class DownloadArticlesListTask extends AsyncTask<String, Void, String> {
-
-
-        private String intermediate;
-
-        // JSON Node names
-        //JSON DATA
-        private String jsonStr;
-        // contacts JSONArray
-        JSONArray articles = null;
-
-        @Override
-        protected void onPreExecute() {
-            // Here, show progress bar
-            progressBar.setVisibility(View.VISIBLE);
-
-            if(null == Authentication.getToken()) {
-                if(isConnected()) {
-                    Log.v(TAG, "Authentication");
-                    new AuthenticateTask().execute();
-                } else {
-                    textView.setText("No Network");
-                }
             }
         }
 
 
         @Override
         protected String doInBackground(String... urls) {
+            if(null == Authentication.getToken())
+                authenticate();
 
             String token = Authentication.getToken();
+
             Log.v(TAG, token);
 
             /* Creates Http Client */
