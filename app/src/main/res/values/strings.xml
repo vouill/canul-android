@@ -15,4 +15,7 @@
     <string name="title_activity_dashboard">DashboardActivity</string>
     <!-- Dashboard -->
     <string name="welcome_msg">Hello %1$s, how are you today?</string>
+    <string name="title_activity_single_article">SingleArticleActivity</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>
