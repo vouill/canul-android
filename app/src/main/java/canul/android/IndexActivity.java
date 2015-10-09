@@ -6,15 +6,20 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,6 +28,12 @@ import java.io.IOException;
 public class IndexActivity extends ListActivity {
 
     private static final String DEBUG_TAG = "HttpExample";
+    private static final String AUTHENTICATE_URL = "http://dev.canul.fr/api/authenticate";
+    private static final String TOKEN = "token";
+    private static final String SUCCESS = "success";
+    private static final String TAG = "IndexActivity";
+    private EditText urlText;
+
     private TextView textView;
     private ProgressBar progressBar;
     String stringUrlArticles = "http://dev.canul.fr/api/articles";
@@ -33,24 +44,79 @@ public class IndexActivity extends ListActivity {
     private static final String TAG_AUTHOR = "author";
 
 
+    private AuthenticateTask authenticateTask;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_index);
+
+       // urlText = (EditText) findViewById(R.id.myUrl);
         textView = (TextView) findViewById(R.id.myText);
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
+        getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
         if (networkInfo != null && networkInfo.isConnected()) {
-            new DownloadWebpageTask().execute(stringUrlArticles);
+          /* Creates & executes an authenticateTask */
+          new AuthenticateTask().execute();
 
-        } else {
+        } else
             textView.setText("No network connection available.");
+
+    }
+
+    public class AuthenticateTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            /* Creates Http Client */
+            OkHttpClient client = new OkHttpClient();
+
+            /* Creates the request body */
+            RequestBody body = new FormEncodingBuilder()
+                    .add("name", "user")
+                    .add("password", "password")
+                    .build();
+
+            /* Creates & sends the POST request */
+            Request request = new Request.Builder()
+                    .url(AUTHENTICATE_URL)
+                    .post(body)
+                    .build();
+
+            try {
+
+                /* Sends the request and waits for the response */
+                Response response = client.newCall(request).execute();
+                String string = response.body().string();
+
+                /* Parses the response body */
+                JSONObject json = new JSONObject(string);
+                Boolean success = json.getBoolean(SUCCESS);
+
+                if (success){
+                    String token = json.getString(TOKEN);
+                    Authentication.init(token);
+                    Log.v(TAG, Authentication.getToken());
+                } else {
+
+                }
+
+                Log.v(TAG, string);
+            } catch (IOException e) {
+                  e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
         }
-
-
     }
 
 
@@ -66,8 +132,6 @@ public class IndexActivity extends ListActivity {
             Response response = client.newCall(request).execute();
             return response.body().string();
         }
-
-
     }
 
     class DownloadWebpageTask extends AsyncTask<String, Void, String> {
@@ -100,7 +164,7 @@ public class IndexActivity extends ListActivity {
             String response = null;
             String success=null;
             try {
-
+                String url = "http://dev.canul.fr/api/articles";
                 response = example.run(urls[0]);
                 Thread.sleep(2000);
             } catch (IOException e) {
@@ -121,12 +185,7 @@ public class IndexActivity extends ListActivity {
                         String title = c.getString(TAG_TITLE);
                         String content = c.getString(TAG_CONTENT);
                         String author = c.getString(TAG_AUTHOR);
-
-
-
-
-
-
+                        
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
