@@ -1,18 +1,17 @@
 package canul.android;
 
-import android.app.ListActivity;
+import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
-import android.widget.AdapterView;
 import android.widget.ListAdapter;
-import android.widget.ListView;
 
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
@@ -33,7 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class IndexActivity extends ListActivity {
+public class IndexActivity extends Activity {
 
     private static final String BASE_URL = "http://dev.canul.fr/api/";
     private static final String AUTHENTICATE_URL = "authenticate";
@@ -48,8 +47,15 @@ public class IndexActivity extends ListActivity {
     private TextView textView;
     private ProgressBar progressBar;
 
+    /* Recycler View */
 
-    ListView list;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager manager;
+
+
+
+   // ListView list;
     private static final String TAG_TITLE = "title";
     private static final String TAG_CONTENT = "content";
     private static final String TAG_AUTHOR = "author";
@@ -79,10 +85,24 @@ public class IndexActivity extends ListActivity {
         } else
             textView.setText("No network connection available.");
 
+        /* Sets recycler view */
 
-        ListView lv = getListView();
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        manager = new IndexLayoutManager(this);
+
+        recyclerView.setLayoutManager(manager);
+        String[] dataSet = {"Salut", "ca", "va"};
+        adapter = new IndexAdapter(dataSet);
+        recyclerView.setAdapter(adapter);
+
+
+
+
+/*        ListView lv = getListView();
 
         // Listview on item click listener
+
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -103,7 +123,7 @@ public class IndexActivity extends ListActivity {
 
             }
         });
-
+*/
     }
 
     public boolean isConnected(){
@@ -116,6 +136,8 @@ public class IndexActivity extends ListActivity {
     public boolean isSucceed(JSONObject json) throws JSONException{
         return json.getBoolean(SUCCESS);
     }
+
+
 
 
     class DownloadArticlesListTask extends AsyncTask<String, Void, String> {
@@ -263,7 +285,7 @@ public class IndexActivity extends ListActivity {
                                 R.layout.list_item,
                                 new String[] { TAG_TITLE,TAG_CONTENT, TAG_AUTHOR }, new int[] {
                                 R.id.title,R.id.content, R.id.author});
-                        setListAdapter(adapter);
+                        //setListAdapter(adapter);
 
                     }
                 } catch (JSONException e) {

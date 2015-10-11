@@ -25,12 +25,12 @@ public class SingleArticleActivity extends Activity {
 
 
         // Displaying all values on the screen
-        TextView lbltitle = (TextView) findViewById(R.id.arttitle);
-        TextView lblcontent = (TextView) findViewById(R.id.artcontent);
-    ;
+       // TextView lbltitle = (TextView) findViewById(R.id.arttitle);
+        //TextView lblcontent = (TextView) findViewById(R.id.artcontent);
 
-        lbltitle.setText(title);
-        lblcontent.setText(content);
+
+        //lbltitle.setText(title);
+        //lblcontent.setText(content);
 
 
     }
