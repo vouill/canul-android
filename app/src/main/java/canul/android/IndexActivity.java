@@ -9,11 +9,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -25,7 +23,6 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,10 +44,11 @@ public class IndexActivity extends ListActivity {
     private static final String TAG = "IndexActivity";
 
 
+    /* Recycler View */
 
-    //JSON ARGUMENTS
+   // ListView list;
     private static final String TAG_TITLE = "title";
-    private static final String TAG_CONTENT = "content";
+    private static final String TAG_CONTENT = "extract";
     private static final String TAG_AUTHOR = "author";
     private static final String TAG_PUBLISHED = "published";
     private static final String ARTICLES = "articles";
@@ -58,7 +56,7 @@ public class IndexActivity extends ListActivity {
 
     //LAYOUT
     private TextView textView;
-    private ProgressBar progressBar;
+        private ProgressBar progressBar;
 
     //list
     ListView list;
@@ -84,6 +82,7 @@ public class IndexActivity extends ListActivity {
         ListView lv = getListView();
 
         // Listview on item click listener
+
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -119,10 +118,6 @@ public class IndexActivity extends ListActivity {
     class DownloadArticlesListTask extends AsyncTask<String, Void, String> {
 
 
-        private String intermediate;
-
-        // JSON Node names
-        //JSON DATA
         private String jsonStr;
         // contacts JSONArray
         JSONArray articles = null;
@@ -167,7 +162,7 @@ public class IndexActivity extends ListActivity {
                 boolean  success = json.getBoolean(SUCCESS);
 
                 if (success){
-                    /* Adds token to the authentication object */
+                    /* Adds pro to the authentication object */
                     String token = json.getString(TOKEN);
                     Authentication.init(token);
                 } else {
@@ -189,8 +184,6 @@ public class IndexActivity extends ListActivity {
                 authenticate();
 
             String token = Authentication.getToken();
-
-            Log.v(TAG, token);
 
             /* Creates Http Client */
             OkHttpClient client = new OkHttpClient();
@@ -263,6 +256,7 @@ public class IndexActivity extends ListActivity {
                                 new String[] { TAG_TITLE,TAG_CONTENT, TAG_AUTHOR  , TAG_PUBLISHED}, new int[] {
                                 R.id.title,R.id.content, R.id.author,R.id.published});
                         setListAdapter(adapter);
+
 
                     }
                 } catch (JSONException e) {

@@ -12,14 +12,11 @@
         android:text="@string/header"
         android:textSize="30sp" />
 
-
-
-
-    <ListView
-        android:id="@android:id/list"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@id/header" />
+    <ListView android:id="@android:id/list"
+        android:layout_below="@id/header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </ListView>
 
 
 
