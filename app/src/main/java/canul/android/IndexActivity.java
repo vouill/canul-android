@@ -35,26 +35,33 @@ import java.util.HashMap;
 
 public class IndexActivity extends ListActivity {
 
+    //URLS
     private static final String BASE_URL = "http://dev.canul.fr/api/";
     private static final String AUTHENTICATE_URL = "authenticate";
     private static final String ARTICLES_URL = "articles";
 
+
     private static final String TOKEN = "token";
     private static final String SUCCESS = "success";
     private static final String MESSAGE = "message";
-    private static final String ARTICLES = "articles";
     private static final String TAG = "IndexActivity";
 
-    private TextView textView;
-    private ProgressBar progressBar;
 
 
-    ListView list;
+    //JSON ARGUMENTS
     private static final String TAG_TITLE = "title";
     private static final String TAG_CONTENT = "content";
     private static final String TAG_AUTHOR = "author";
+    private static final String TAG_PUBLISHED = "published";
+    private static final String ARTICLES = "articles";
+    private static final String TAG_ID = "_id";
 
+    //LAYOUT
+    private TextView textView;
+    private ProgressBar progressBar;
 
+    //list
+    ListView list;
     ArrayList<HashMap<String, String>> oslist = new ArrayList<HashMap<String, String>>();
 
 
@@ -73,12 +80,6 @@ public class IndexActivity extends ListActivity {
         else
             textView.setText("No network connection available.");
 
-        if (isConnected()) {
-            /* Creates & executes download task */
-            new DownloadArticlesListTask().execute();
-        } else
-            textView.setText("No network connection available.");
-
 
         ListView lv = getListView();
 
@@ -88,16 +89,13 @@ public class IndexActivity extends ListActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                // getting values from selected ListItem
-                String title = ((TextView) view.findViewById(R.id.title))
-                        .getText().toString();
-                String content = ((TextView) view.findViewById(R.id.content))
-                        .getText().toString();
 
                 // Starting single contact activity
                 Intent in = new Intent(getApplicationContext(),SingleArticleActivity.class);
-                in.putExtra(TAG_TITLE, title);
-                in.putExtra(TAG_CONTENT, content);
+                in.putExtra(TAG_TITLE, oslist.get(position).get(TAG_TITLE));
+                in.putExtra(TAG_CONTENT, oslist.get(position).get(TAG_CONTENT));
+                in.putExtra(TAG_AUTHOR, oslist.get(position).get(TAG_AUTHOR));
+                in.putExtra(TAG_ID, oslist.get(position).get(TAG_ID));
 
                 startActivity(in);
 
@@ -134,7 +132,6 @@ public class IndexActivity extends ListActivity {
             // Here, show progress bar
             progressBar.setVisibility(View.VISIBLE);
         }
-
         private void authenticate() {
             /* Creates Http Client */
             OkHttpClient client = new OkHttpClient();
@@ -248,21 +245,23 @@ public class IndexActivity extends ListActivity {
                         String title = c.getString(TAG_TITLE);
                         String content = c.getString(TAG_CONTENT);
                         String author = c.getString(TAG_AUTHOR);
+                        String published = c.getString(TAG_PUBLISHED);
+                        String id_articles = c.getString(TAG_ID);
 
                         HashMap<String, String> map = new HashMap<String, String>();
 
-                        map.put(TAG_TITLE, title);
-                        map.put(TAG_CONTENT, content);
-                        map.put(TAG_AUTHOR, author);
-
-
+                        map.put(TAG_TITLE,title);
+                        map.put(TAG_CONTENT,content);
+                        map.put(TAG_AUTHOR,author);
+                        map.put(TAG_PUBLISHED,published);
+                        map.put(TAG_ID,id_articles);
 
                         oslist.add(map);
 
                         ListAdapter adapter = new SimpleAdapter(IndexActivity.this, oslist,
                                 R.layout.list_item,
-                                new String[] { TAG_TITLE,TAG_CONTENT, TAG_AUTHOR }, new int[] {
-                                R.id.title,R.id.content, R.id.author});
+                                new String[] { TAG_TITLE,TAG_CONTENT, TAG_AUTHOR  , TAG_PUBLISHED}, new int[] {
+                                R.id.title,R.id.content, R.id.author,R.id.published});
                         setListAdapter(adapter);
 
                     }

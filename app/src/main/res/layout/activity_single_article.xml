@@ -33,6 +33,14 @@
                 android:layout_height="fill_parent"
                 android:text="coucou" />
 
+            <TextView
+                android:id="@+id/id_articles"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="id    " />
+
+
+
 
         </LinearLayout>
     </ScrollView>
