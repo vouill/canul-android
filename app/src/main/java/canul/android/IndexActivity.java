@@ -91,9 +91,7 @@ public class IndexActivity extends ListActivity {
 
                 // Starting single contact activity
                 Intent in = new Intent(getApplicationContext(),SingleArticleActivity.class);
-                in.putExtra(TAG_TITLE, oslist.get(position).get(TAG_TITLE));
-                in.putExtra(TAG_CONTENT, oslist.get(position).get(TAG_CONTENT));
-                in.putExtra(TAG_AUTHOR, oslist.get(position).get(TAG_AUTHOR));
+
                 in.putExtra(TAG_ID, oslist.get(position).get(TAG_ID));
 
                 startActivity(in);

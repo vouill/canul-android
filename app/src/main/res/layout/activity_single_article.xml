@@ -86,7 +86,7 @@
                         android:id="@+id/clickablecomments"
                         android:onClick="onClick"
                         android:clickable="true"
-                        android:text="Commentaires(2)"
+                        android:text="Commentaires()"
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentEnd="true" />
 
@@ -97,8 +97,8 @@
 
         </LinearLayout>
 
-    </ScrollView>
 
+    </ScrollView>
 
 
     <ListView android:id="@android:id/list"
