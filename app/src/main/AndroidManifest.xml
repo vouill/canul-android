@@ -17,6 +17,10 @@
             android:name=".SingleArticleActivity"
             android:label="@string/title_activity_single_article" >
         </activity>
+        <activity
+            android:name=".activities.CommentsActivity"
+            android:label="@string/title_activity_comment" >
+        </activity>
     </application>
 
 </manifest>

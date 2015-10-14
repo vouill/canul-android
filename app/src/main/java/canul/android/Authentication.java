@@ -22,6 +22,7 @@ public class Authentication {
         if (instance ==  null) {
             return null;
         }
+
         return token;
     }
 
