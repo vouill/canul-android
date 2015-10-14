@@ -12,14 +12,17 @@
         android:theme="@style/AppTheme" >
         <activity android:name=".IndexActivity" >
         </activity>
-        <activity android:name=".MainActivity" />
         <activity
-            android:name=".SingleArticleActivity"
+            android:name=".activities.SingleArticleActivity"
             android:label="@string/title_activity_single_article" >
         </activity>
         <activity
             android:name=".activities.CommentsActivity"
             android:label="@string/title_activity_comment" >
+        </activity>
+        <activity
+            android:name=".activities.CommentPost"
+            android:label="@string/title_activity_comment_post" >
         </activity>
     </application>
 

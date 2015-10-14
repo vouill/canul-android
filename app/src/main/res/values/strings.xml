@@ -24,4 +24,8 @@
     <string name="published">xx/xx/xx</string>
     <string name="content">Content</string>
     <string name="title_activity_comment">CommentActivity</string>
+    <string name="title_activity_comment_post">CommentPost</string>
+
+    <string name="post_comment">Post comment</string>
+
 </resources>

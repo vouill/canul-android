@@ -1,5 +1,6 @@
-package canul.android;
+package canul.android.activities;
 
+import android.app.ActionBar;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -29,6 +31,11 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import canul.android.Authentication;
+import canul.android.DateConverter;
+import canul.android.IndexActivity;
+import canul.android.R;
 
 public class SingleArticleActivity extends ListActivity {
     //URL
@@ -89,17 +96,32 @@ public class SingleArticleActivity extends ListActivity {
 
         if(isConnected()) {
             new DownloadArticleTask().execute();
-            new DownloadCommentTask().execute();
         }
         else{
             //no network connection
         }
 
+        ActionBar actionBar = getActionBar();
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
 
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+
+                Intent in = new Intent(getApplicationContext(), IndexActivity.class);
 
 
+                startActivity(in);
 
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
     public void onClick(View v) {
         ListView lv = getListView();
@@ -273,7 +295,7 @@ public class SingleArticleActivity extends ListActivity {
                     Log.v(TAG,ss.toString());
                     setTitle(jsontitle);
                     author.setText(jsonauthor);
-                    published.setText("date : "+DateConverter.convert(jsonpublished));
+                    published.setText("date : "+ DateConverter.convert(jsonpublished));
                     content.setText(Html.fromHtml(ss.toString()));
 
                 }catch(JSONException e){
@@ -281,174 +303,6 @@ public class SingleArticleActivity extends ListActivity {
                     }
 
                 }
-            progressBar.setVisibility(View.GONE);
-
-
-        }
-    }
-
-    class DownloadCommentTask extends AsyncTask<String, Void, String> {
-
-
-        private String jsonStr;
-
-        JSONArray comments = null;
-
-        @Override
-        protected void onPreExecute() {
-            // Here, show progress bar
-            progressBar.setVisibility(View.VISIBLE);
-
-        }
-        private void authenticate() {
-            /* Creates Http Client */
-            OkHttpClient client = new OkHttpClient();
-
-            /* Creates the request body */
-            RequestBody body = new FormEncodingBuilder()
-                    .add("name", "user")
-                    .add("password", "password")
-                    .build();
-
-            /* Creates Authentication URL */
-            String url = new StringBuilder()
-                    .append(BASE_URL)
-                    .append(AUTHENTICATE_URL)
-                    .toString();
-
-
-
-            /* Creates & sends the POST request */
-            Request request = new Request.Builder()
-                    .url(url)
-                    .post(body)
-                    .build();
-
-            try {
-
-                /* Sends the request and waits for the response */
-                Response response = client.newCall(request).execute();
-                String string = response.body().string();
-
-                Log.v(TAG,string);
-                /* Parses the response body */
-                JSONObject json = new JSONObject(string);
-                boolean  success = json.getBoolean(SUCCESS);
-
-                if (success){
-                    /* Adds token to the authentication object */
-                    String token = json.getString(TOKEN);
-                    Authentication.init(token);
-                } else {
-                    /* Prints the error message */
-
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-        @Override
-        protected String doInBackground(String... urls) {
-            if(null == Authentication.getToken())
-                authenticate();
-            Log.v(TAG, "do in back");
-            String token = Authentication.getToken();
-
-            /* Creates Http Client */
-            OkHttpClient client = new OkHttpClient();
-
-
-            /* Creates Authentication URL */
-            String url = new StringBuilder()
-                    .append(BASE_URL)
-                    .append(COMMENTS_URL)
-                    .append(IDSTR)
-                    .toString();
-
-            Log.v(TAG, url);
-
-            /* Creates & sends the POST request */
-            Request request = new Request.Builder()
-                    .url(url)
-                    .header("x-access-token", token)
-                    .build();
-
-            /* Sends the request */
-            try {
-                Response response = client.newCall(request).execute();
-                jsonStr = response.body().string();
-                Log.v(TAG, jsonStr);
-
-
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        // onPostExecute displays the results of the AsyncTask.
-        @Override
-        protected void onPostExecute(String result) {
-
-
-            if (jsonStr != null) {
-                try {
-
-
-
-
-                    JSONObject jsonObj = new JSONObject(jsonStr);
-
-                    if(jsonObj.getBoolean("success")==false){
-                        comment_status.setText("Commentaires(0)");
-                    return;
-                    }
-                    //loading comments
-                    comments = jsonObj.getJSONArray("comments");
-
-
-                    comment_status.setText("Commentaires(" + comments.length() + ")");
-
-
-                        for (int i = 0; i < comments.length(); i++) {
-                            JSONObject c = comments.getJSONObject(i);
-
-                            String content = c.getString(TAG_CONTENT);
-                            String author = c.getString(TAG_AUTHOR);
-                            String published = c.getString(TAG_PUBLISHED);
-
-                            HashMap<String, String> map = new HashMap<String, String>();
-                            map.put(TAG_CONTENT, content);
-                            map.put(TAG_AUTHOR, author);
-                            map.put(TAG_PUBLISHED, published);
-
-
-                            oslist.add(map);
-
-                            ListAdapter adapter = new SimpleAdapter(SingleArticleActivity.this, oslist,
-                                    R.layout.comment_item,
-                                    new String[]{TAG_AUTHOR, TAG_CONTENT, TAG_PUBLISHED}, new int[]{
-                                    R.id.author,  R.id.content, R.id.published});
-                            setListAdapter(adapter);
-
-
-
-                    }
-
-
-                }catch(JSONException e){
-                    e.printStackTrace();
-                }
-
-            }
             progressBar.setVisibility(View.GONE);
 
 
