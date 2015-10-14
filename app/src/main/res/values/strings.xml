@@ -1,6 +1,6 @@
 <resources>
     <!-- Global -->
-    <string name="app_name">My Application</string>
+    <string name="app_name">Le Canul</string>
     <string name="action_settings">Settings</string>
 
     <!-- Main / Login -->
@@ -15,7 +15,7 @@
     <string name="title_activity_dashboard">DashboardActivity</string>
     <!-- Dashboard -->
     <string name="welcome_msg">Hello %1$s, how are you today?</string>
-    <string name="title_activity_single_article">SingleArticleActivity</string>
+    <string name="title_activity_single_article">Article</string>
 
     <string name="hello_world">Hello world!</string>
 </resources>

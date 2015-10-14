@@ -27,8 +27,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.TimeZone;
 
 public class IndexActivity extends ListActivity {
 
@@ -42,9 +46,6 @@ public class IndexActivity extends ListActivity {
     private static final String SUCCESS = "success";
     private static final String MESSAGE = "message";
     private static final String TAG = "IndexActivity";
-
-
-    /* Recycler View */
 
    // ListView list;
     private static final String TAG_TITLE = "title";
@@ -206,7 +207,6 @@ public class IndexActivity extends ListActivity {
                 String string = response.body().string();
                 JSONObject json = new JSONObject(string);
                 if(isSucceed(json)){
-                    Log.v(TAG, json.getJSONArray(ARTICLES).toString());
                     jsonStr = string;
                 }
                 Log.v(TAG, json.toString());
@@ -236,7 +236,16 @@ public class IndexActivity extends ListActivity {
                         String title = c.getString(TAG_TITLE);
                         String content = c.getString(TAG_CONTENT);
                         String author = c.getString(TAG_AUTHOR);
-                        String published = c.getString(TAG_PUBLISHED);
+                        String dateString = c.getString(TAG_PUBLISHED);
+                        SimpleDateFormat df = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
+                        TimeZone tz = TimeZone.getTimeZone("GMT");
+                        df.setTimeZone(tz);
+                        Date date = df.parse(dateString);
+                        SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yy");
+
+                        String published = formater.format(date);
+                        Log.v(TAG, formater.format(date));
+                        c.getString(TAG_PUBLISHED);
                         String id_articles = c.getString(TAG_ID);
 
                         HashMap<String, String> map = new HashMap<String, String>();
@@ -258,6 +267,8 @@ public class IndexActivity extends ListActivity {
 
                     }
                 } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (ParseException e) {
                     e.printStackTrace();
                 }
             }
