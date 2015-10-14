@@ -2,24 +2,44 @@ package canul.android.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import canul.android.DateConverter;
 import canul.android.R;
+import canul.android.adapters.CommentsAdapter;
 import canul.android.interfaces.CommentsTaskInterface;
+import canul.android.models.Comment;
 import canul.android.tasks.CommentsTask;
 
 public class CommentsActivity extends Activity implements CommentsTaskInterface {
 
     public static String TAG = CommentsActivity.class.getName();
+    public static String COMMENTS_TAG = "comments";
+    public static String CONTENT_TAG = "content";
+    public static String AUTHOR_TAG = "author";
+    public static String PUBLISHED_TAG = "published";
     private ProgressBar progressBar;
+
+    private RecyclerView recyclerView;
+    private CommentsAdapter adapter;
+    private RecyclerView.LayoutManager manager;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +47,17 @@ public class CommentsActivity extends Activity implements CommentsTaskInterface 
         setContentView(R.layout.activity_comment);
 
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        manager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(manager);
+        List<Comment> comments = new ArrayList();
+
+        adapter = new CommentsAdapter(comments);
+
+        recyclerView.setAdapter(adapter);
+
 
         new CommentsTask(this).execute();
     }
@@ -55,7 +86,20 @@ public class CommentsActivity extends Activity implements CommentsTaskInterface 
 
     @Override
     public void onSuccess(JSONObject json) {
-        
+        List<Comment> comments = new ArrayList<>();
+        try {
+            JSONArray array = json.getJSONArray(COMMENTS_TAG);
+            for(int i = 0 ; i < array.length() ; i++){
+                JSONObject comment = array.getJSONObject(i);
+                String author = comment.getString(AUTHOR_TAG);
+                String published = DateConverter.convert(comment.getString(PUBLISHED_TAG));
+                String content = comment.getString(CONTENT_TAG);
+                comments.add(new Comment(author,published,content));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        adapter.append(comments);
     }
 
     @Override

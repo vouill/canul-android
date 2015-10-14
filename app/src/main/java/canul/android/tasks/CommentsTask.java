@@ -49,7 +49,8 @@ public class CommentsTask extends CanulTask{
         /* Creates Authentication URL */
         String url = new StringBuilder()
                 .append(BASE_URL)
-                .append(ARTICLES_URL)
+                .append(COMMENTS_BY_ARTICLE_URL)
+                .append("/561e23026f8e19f41074ee21")
                 .toString();
 
 
