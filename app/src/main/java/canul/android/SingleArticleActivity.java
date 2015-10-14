@@ -79,7 +79,7 @@ public class SingleArticleActivity extends ListActivity {
         content= (TextView)findViewById(R.id.content);
         author = (TextView)findViewById(R.id.author);
         published = (TextView)findViewById(R.id.published);
-        comment_status = (TextView)findViewById(R.id.clickablecomments);
+        comment_status = (TextView)findViewById(R.id.comments);
 
         ListView lv = getListView();
 
@@ -271,10 +271,9 @@ public class SingleArticleActivity extends ListActivity {
 
 
                     Log.v(TAG,ss.toString());
-
-                    title.setText(jsontitle);
+                    setTitle(jsontitle);
                     author.setText(jsonauthor);
-                    published.setText("date : "+jsonpublished);
+                    published.setText("date : "+DateConverter.convert(jsonpublished));
                     content.setText(Html.fromHtml(ss.toString()));
 
                 }catch(JSONException e){

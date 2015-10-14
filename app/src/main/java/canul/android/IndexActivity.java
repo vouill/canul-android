@@ -236,15 +236,8 @@ public class IndexActivity extends ListActivity {
                         String title = c.getString(TAG_TITLE);
                         String content = c.getString(TAG_CONTENT);
                         String author = c.getString(TAG_AUTHOR);
-                        String dateString = c.getString(TAG_PUBLISHED);
-                        SimpleDateFormat df = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
-                        TimeZone tz = TimeZone.getTimeZone("GMT");
-                        df.setTimeZone(tz);
-                        Date date = df.parse(dateString);
-                        SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yy");
+                        String published = DateConverter.convert(c.getString(TAG_PUBLISHED));
 
-                        String published = formater.format(date);
-                        Log.v(TAG, formater.format(date));
                         c.getString(TAG_PUBLISHED);
                         String id_articles = c.getString(TAG_ID);
 
@@ -267,8 +260,6 @@ public class IndexActivity extends ListActivity {
 
                     }
                 } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (ParseException e) {
                     e.printStackTrace();
                 }
             }
