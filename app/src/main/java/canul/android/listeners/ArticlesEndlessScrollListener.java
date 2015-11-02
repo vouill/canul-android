@@ -2,9 +2,7 @@ package canul.android.listeners;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
-import canul.android.activities.ShowArticlesActivity;
 import canul.android.interfaces.EndlessScrollInterface;
 
 /**

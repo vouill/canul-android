@@ -20,17 +20,11 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name=".activities.ShowArticlesActivity"
-            android:label="Le Canul" />
-        <activity
-            android:name=".activities.ShowArticleAndCommentsActivity"
+            android:name=".activities.ShowExtractsActivity"
             android:label="Le Canul" />
         <activity
             android:name=".activities.ShowArticleActivity"
-            android:label="@string/title_activity_single_article" />
-        <activity
-            android:name=".activities.ShowCommentsActivity"
-            android:label="@string/title_activity_comment" />
+            android:label="Le Canul" />
         <activity
             android:name=".activities.EditCommentActivity"
             android:label="@string/title_activity_comment_post" />

@@ -42,7 +42,7 @@ public class EditCommentActivity extends Activity {
     private static final String TOKEN = "token";
     private static final String SUCCESS = "success";
     private static final String MESSAGE = "message";
-    private static final String TAG = "ShowArticlesActivity";
+    private static final String TAG = "ShowExtractsActivity";
 
     private static final String TAG_ID = "_id";
     private ProgressBar progressBar;
@@ -72,23 +72,9 @@ public class EditCommentActivity extends Activity {
 
     }
 
-    /**
-     * Called when the user touches the button
-     */
-    public void sendComm(View view) {
 
-        jsonStringPost = ToJson(authorinput.getText().toString(), commentinput.getText().toString());
-        new PostCommentTask().execute();
-
-        Intent in = new Intent(getApplicationContext(), ShowCommentsActivity.class);
-        in.putExtra(TAG_ID, IDSTR);
-        startActivity(in);
-        this.finish();
-
-    }
 
     public String ToJson(String author, String comment) {
-
         String jsonstring = new StringBuilder()
                 .append("{\"author\":\"")
                 .append(author)

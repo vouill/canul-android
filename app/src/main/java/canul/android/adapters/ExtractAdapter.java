@@ -4,83 +4,47 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import canul.android.R;
-import canul.android.activities.ShowArticlesActivity;
+import canul.android.activities.ShowExtractsActivity;
+import canul.android.holders.ExtractViewHolder;
 import canul.android.models.Article;
 
 /**
  * Created by Chazz on 15/10/15.
  */
-public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHolder>  {
+public class ExtractAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  {
 
-    private List<Article> articles;
-    private final ShowArticlesActivity activity;
+    private List<Article> articles = new ArrayList<>();
+    private final ShowExtractsActivity activity;
 
-    private final static String TAG = ArticlesAdapter.class.getName();
 
-    public ArticlesAdapter(ShowArticlesActivity activity,
-                           List<Article> articles) {
+    public ExtractAdapter(ShowExtractsActivity activity) {
         this.activity = activity;
-        this.articles = articles;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-
-        private TextView authorTextView;
-        private TextView publishedTextView;
-        private TextView extractTextView;
-        private TextView titleTextView;
-
-        public ViewHolder(View view) {
-            super(view);
-            authorTextView = (TextView) view.findViewById(R.id.author);
-            //TODO rename to extract
-            extractTextView = (TextView) view.findViewById(R.id.content);
-            publishedTextView = (TextView) view.findViewById(R.id.published);
-            titleTextView = (TextView) view.findViewById(R.id.title);
-        }
-
-        public TextView getAuthorTextView() {
-            return authorTextView;
-        }
-
-        public TextView getExtractTextView() {
-            return extractTextView;
-        }
-
-        public TextView getPublishedTextView() {
-            return publishedTextView;
-        }
-
-        public TextView getTitleTextView() {
-            return titleTextView;
-        }
-    }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view =  LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.view_article, parent, false);
-
         view.setOnClickListener(activity);
-
-        ViewHolder holder = new ViewHolder(view);
-
+        RecyclerView.ViewHolder holder = new ExtractViewHolder(view);
         return holder;
     }
 
 
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.getExtractTextView().setText(articles.get(position).getExtract());
-        holder.getAuthorTextView().setText(articles.get(position).getAuthor());
-        holder.getPublishedTextView().setText(articles.get(position).getPublished());
-        holder.getTitleTextView().setText(articles.get(position).getTitle());
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        ExtractViewHolder extractViewHolder = (ExtractViewHolder) holder;
+        extractViewHolder.getExtractTextView().setText(articles.get(position).getExtract());
+        extractViewHolder.getAuthorTextView().setText(articles.get(position).getAuthor());
+        extractViewHolder.getPublishedTextView().setText(articles.get(position).getPublished());
+        extractViewHolder.getTitleTextView().setText(articles.get(position).getTitle());
     }
 
     public void setArticles(List<Article> articles){

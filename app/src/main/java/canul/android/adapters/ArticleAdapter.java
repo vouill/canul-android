@@ -1,111 +1,95 @@
 package canul.android.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import canul.android.R;
-import canul.android.activities.ShowArticleAndCommentsActivity;
-import canul.android.activities.ShowArticlesActivity;
+import canul.android.holders.ArticleViewHolder;
+import canul.android.holders.CommentViewHolder;
 import canul.android.models.Article;
 import canul.android.models.Comment;
 
 /**
  * Created by Chazz on 22/10/15.
+ * Adapted from http://doublewong.com/2014/create-recyclerview-with-multiple-view-type/
  */
-public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHolder> {
+public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private Article article;
-    private List<Comment> comments;
-    private final ShowArticleAndCommentsActivity activity;
 
-    private final static String TAG = ArticlesAdapter.class.getName();
+    private ArrayList<Object> objects = new ArrayList<>();
 
-    public ArticleAdapter(ShowArticleAndCommentsActivity activity,
-                          Article article, List<Comment> comments) {
-        this.activity = activity;
-        this.article = article;
-        this.comments = comments;
-    }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-
-        private TextView authorTextView;
-        private TextView publishedTextView;
-        private TextView extractTextView;
-        private TextView titleTextView;
-
-        public ViewHolder(View view) {
-            super(view);
-            authorTextView = (TextView) view.findViewById(R.id.author);
-            //TODO rename to extract
-            extractTextView = (TextView) view.findViewById(R.id.content);
-            publishedTextView = (TextView) view.findViewById(R.id.published);
-            titleTextView = (TextView) view.findViewById(R.id.title);
-        }
-
-        public TextView getAuthorTextView() {
-            return authorTextView;
-        }
-
-        public TextView getExtractTextView() {
-            return extractTextView;
-        }
-
-        public TextView getPublishedTextView() {
-            return publishedTextView;
-        }
-
-        public TextView getTitleTextView() {
-            return titleTextView;
-        }
-    }
+    private static final String TAG = ArticleAdapter.class.getName();
+    private static final int TYPE_ARTICLE = 0;
+    private static final int TYPE_COMMENT = 1;
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.view_article, parent, false);
-
-        view.setOnClickListener(activity);
-
-        ViewHolder holder = new ViewHolder(view);
-
-        return holder;
-    }
-
-
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        if(null != article)
-        if(position == 0){
-            holder.getExtractTextView().setText(article.getExtract());
-            holder.getAuthorTextView().setText(article.getAuthor());
-            holder.getPublishedTextView().setText(article.getPublished());
-            holder.getTitleTextView().setText(article.getTitle());
+    public int getItemViewType(int position) {
+        int viewType;
+        if(objects.size() == 0)
+            return TYPE_COMMENT;
+        if(objects.get(position) instanceof Article){
+            viewType = TYPE_ARTICLE;
         } else {
-            holder.getAuthorTextView().setText(comments.get(position).getAuthor());
+            viewType = TYPE_COMMENT;
         }
-
+        return viewType;
     }
 
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+
+        switch (viewType) {
+            case TYPE_ARTICLE:
+                ViewGroup articleView = (ViewGroup) inflater.inflate(R.layout.view_article, parent, false);
+                ArticleViewHolder articleViewHolder = new ArticleViewHolder(articleView);
+                return articleViewHolder;
+            default:
+                ViewGroup commentView = (ViewGroup) inflater.inflate(R.layout.view_comment, parent, false);
+                CommentViewHolder commentViewHolder = new CommentViewHolder(commentView);
+                return commentViewHolder;
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        switch (holder.getItemViewType()) {
+            case TYPE_ARTICLE:
+                Article article = (Article) objects.get(0);
+                ArticleViewHolder articleViewHolder = (ArticleViewHolder) holder;
+                articleViewHolder.getAuthorTextView().setText(article.getAuthor());
+                articleViewHolder.getTitleTextView().setText(article.getTitle());
+                articleViewHolder.getContentTextView().setText(article.getExtract());
+                articleViewHolder.getPublishedTextView().setText(article.getPublished());
+
+                break;
+            default:
+                Comment comment = (Comment) objects.get(position);
+                CommentViewHolder commentViewHolder = (CommentViewHolder) holder;
+                commentViewHolder.getAuthorTextView().setText(comment.getAuthor());
+                commentViewHolder.getContentTextView().setText(comment.getContent());
+                commentViewHolder.getPublishedTextView().setText(comment.getPublished());
+
+        }
+    }
+
+    public void setArticle(Article article) {
+        this.objects.add(article);
         notifyDataSetChanged();
     }
 
-    public void setArticle(Article article ){
-        this.article= article;
+    public void setComments(List<Comment> comments){
+        this.objects.addAll(comments);
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return comments.size() + 1;
+        return this.objects.size();
     }
-
-
 }
