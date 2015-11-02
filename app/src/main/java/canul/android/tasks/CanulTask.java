@@ -24,6 +24,7 @@ public abstract class CanulTask extends AsyncTask<String,Void,Void> {
     public static final String BASE_URL = "http://dev.canul.fr/api/";
     public static final String AUTHENTICATE_URL = "authenticate";
     public static final String ARTICLES_URL = "articles";
+
     public static final String COMMENTS_BY_ARTICLE_URL ="/comments/byArticle";
 
     public static final String TAG = CanulTask.class.getName();
@@ -36,7 +37,6 @@ public abstract class CanulTask extends AsyncTask<String,Void,Void> {
 
 
     private void authenticate() {
-        Log.v(TAG, "authentication");
             /* Creates Http Client */
         OkHttpClient client = new OkHttpClient();
 
@@ -59,11 +59,14 @@ public abstract class CanulTask extends AsyncTask<String,Void,Void> {
                 .post(body)
                 .build();
 
+
+
         try {
 
             /* Sends the request and waits for the response */
             Response response = client.newCall(request).execute();
             String string = response.body().string();
+
 
 
             /* Parses the response body */

@@ -10,20 +10,33 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <activity android:name=".IndexActivity" >
-        </activity>
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
         <activity
-            android:name=".activities.SingleArticleActivity"
-            android:label="@string/title_activity_single_article" >
-        </activity>
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name=".activities.CommentsActivity"
-            android:label="@string/title_activity_comment" >
-        </activity>
+            android:name=".activities.ShowArticlesActivity"
+            android:label="Le Canul" />
         <activity
-            android:name=".activities.CommentPost"
-            android:label="@string/title_activity_comment_post" >
-        </activity>
+            android:name=".activities.ShowArticleAndCommentsActivity"
+            android:label="Le Canul" />
+        <activity
+            android:name=".activities.ShowArticleActivity"
+            android:label="@string/title_activity_single_article" />
+        <activity
+            android:name=".activities.ShowCommentsActivity"
+            android:label="@string/title_activity_comment" />
+        <activity
+            android:name=".activities.EditCommentActivity"
+            android:label="@string/title_activity_comment_post" />
+        <activity
+            android:name=".activities.LoginActivity"
+            android:label="@string/title_activity_login"/>
     </application>
 
 </manifest>

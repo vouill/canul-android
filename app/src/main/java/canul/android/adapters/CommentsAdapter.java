@@ -7,8 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
 
 import canul.android.R;
@@ -62,7 +60,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CardView view = (CardView) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.comment_item, parent, false);
+                .inflate(R.layout.view_comment, parent, false);
         ViewHolder holder = new ViewHolder(view);
         return holder;
     }
@@ -78,7 +76,4 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
     public int getItemCount() {
         return comments.size();
     }
-
-
-
 }

@@ -27,7 +27,7 @@ import java.io.IOException;
 import canul.android.Authentication;
 import canul.android.R;
 
-public class CommentPost extends Activity {
+public class EditCommentActivity extends Activity {
 
 
     //URL
@@ -42,7 +42,7 @@ public class CommentPost extends Activity {
     private static final String TOKEN = "token";
     private static final String SUCCESS = "success";
     private static final String MESSAGE = "message";
-    private static final String TAG = "IndexActivity";
+    private static final String TAG = "ShowArticlesActivity";
 
     private static final String TAG_ID = "_id";
     private ProgressBar progressBar;
@@ -59,7 +59,7 @@ public class CommentPost extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_comment_post);
+        setContentView(R.layout.activity_post_comment);
 
         Intent in = getIntent();
         IDSTR = in.getStringExtra(TAG_ID);
@@ -80,7 +80,7 @@ public class CommentPost extends Activity {
         jsonStringPost = ToJson(authorinput.getText().toString(), commentinput.getText().toString());
         new PostCommentTask().execute();
 
-        Intent in = new Intent(getApplicationContext(), CommentsActivity.class);
+        Intent in = new Intent(getApplicationContext(), ShowCommentsActivity.class);
         in.putExtra(TAG_ID, IDSTR);
         startActivity(in);
         this.finish();

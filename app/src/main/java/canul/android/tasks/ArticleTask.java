@@ -15,67 +15,58 @@ import canul.android.Authentication;
 import canul.android.interfaces.TaskInterface;
 
 /**
- * Created by Chazz on 14/10/15.
+ * Created by Chazz on 22/10/15.
  */
-public class CommentsTask extends CanulTask{
+public class ArticleTask extends CanulTask {
 
-    private final static String TAG = CommentsTask.class.getName();
+    private final static String TAG = ArticleTask.class.getName();
 
-    TaskInterface taskInterface;
+    private final TaskInterface taskInterface;
 
-
-
+    public ArticleTask(TaskInterface taskInterface) {
+        this.taskInterface = taskInterface;
+    }
 
     @Override
     protected void onPreExecute() {
         taskInterface.setProgressBar();
     }
 
-    public CommentsTask(TaskInterface taskInterface) {
-        this.taskInterface = taskInterface;
-    }
-
-
     @Override
     protected Void doInBackground(String... params) {
-        /* authentication is done on the super class */
         super.doInBackground();
 
         String id = params[0];
+        if (null != id) {
 
-        if(id != null){
-             /* Creates Http Client */
+            // Creates Http Client
             OkHttpClient client = new OkHttpClient();
 
-            /* Creates Authentication URL */
+            // Creates Authentication URL
             String url = new StringBuilder()
                     .append(BASE_URL)
-                    .append(COMMENTS_BY_ARTICLE_URL)
+                    .append(ARTICLES_URL)
                     .append("/")
                     .append(id)
                     .toString();
 
-
-            /* Creates & sends the POST request */
-            Request request = new Request.Builder()
+            Request.Builder builder = new Request.Builder()
                     .url(url)
-                    .header("x-access-token", Authentication.getToken())
-                    .build();
+                    .header("x-access-token", Authentication.getToken());
 
-            /* Sends the request */
+            // Sends the request
             try {
-                Response response = client.newCall(request).execute();
+                Response response = client.newCall(builder.build()).execute();
                 String string = response.body().string();
                 this.json = new JSONObject(string);
-            } catch (IOException e) {
+            } catch (JSONException e) {
                 e.printStackTrace();
-            } catch (JSONException e ) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         return null;
     }
-
 
     @Override
     protected void onPostExecute(Void aVoid) {

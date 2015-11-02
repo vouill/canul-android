@@ -1,5 +1,6 @@
-package canul.android;
+package canul.android.activities;
 
+import android.app.ActionBar;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -7,13 +8,14 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -30,73 +32,108 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import canul.android.activities.SingleArticleActivity;
+import canul.android.Authentication;
+import canul.android.DateConverter;
+import canul.android.R;
 
-public class IndexActivity extends ListActivity {
-
-    //URLS
+public class ShowArticleActivity extends ListActivity {
+    //URL
     private static final String BASE_URL = "http://dev.canul.fr/api/";
     private static final String AUTHENTICATE_URL = "authenticate";
-    private static final String ARTICLES_URL = "articles";
+    private static final String ARTICLES_URL = "articles/";
+    private static final String COMMENTS_URL = "comments/byArticle/";
+    private static String IDSTR;
 
 
+    // JSON node key
     private static final String TOKEN = "token";
     private static final String SUCCESS = "success";
     private static final String MESSAGE = "message";
-    private static final String TAG = "IndexActivity";
+    private static final String TAG = "ShowArticlesActivity";
 
-   // ListView list;
     private static final String TAG_TITLE = "title";
-    private static final String TAG_CONTENT = "extract";
-    private static final String TAG_AUTHOR = "author";
-    private static final String TAG_PUBLISHED = "published";
-    private static final String ARTICLES = "articles";
+    private static final String TAG_CONTENT = "content";
     private static final String TAG_ID = "_id";
+    private static final String TAG_PUBLISHED = "published";
+    private static final String TAG_AUTHOR = "author";
+    private ProgressBar progressBar;
 
-    //LAYOUT
-    private TextView textView;
-        private ProgressBar progressBar;
 
-    //list
+    private static TextView title;
+    private static TextView author;
+    private static TextView content;
+    private static TextView published;
+    private static TextView comment_status;
+
     ListView list;
     ArrayList<HashMap<String, String>> oslist = new ArrayList<HashMap<String, String>>();
 
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_index);
+        setContentView(R.layout.activity_show_article);
+
+        // getting intent data
+        Intent in = getIntent();
+
+        // Get JSON values from previous intent
+        IDSTR = in.getStringExtra(TAG_ID);
+        title = (TextView)findViewById(R.id.title);
+        content= (TextView)findViewById(R.id.content);
+        author = (TextView)findViewById(R.id.author);
+        published = (TextView)findViewById(R.id.published);
+        comment_status = (TextView)findViewById(R.id.comments);
+
+        ListView lv = getListView();
 
         oslist = new ArrayList<HashMap<String, String>>();
 
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        Log.v(TAG, "asks for tokens");
 
-        if(isConnected())
-            new DownloadArticlesListTask().execute();
-        else
-            textView.setText("No network connection available.");
+        if(isConnected()) {
+            new DownloadArticleTask().execute();
+        }
+        else{
+            //no network connection
+        }
+
+        ActionBar actionBar = getActionBar();
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
 
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.simple_actions, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                overridePendingTransition( R.anim.left_slide_in, R.anim.right_slide_out);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+    public void onClick(View v) {
         ListView lv = getListView();
-
-        // Listview on item click listener
-
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-
-                // Starting single contact activity
-                Intent in = new Intent(getApplicationContext(),SingleArticleActivity.class);
-
-                in.putExtra(TAG_ID, oslist.get(position).get(TAG_ID));
-
-                startActivity(in);
-
-            }
-        });
+        if(lv.getVisibility()==View.VISIBLE) {
+            lv.setVisibility(View.GONE);
+        }
+        else{
+            lv.setVisibility(View.VISIBLE);
+        }
 
     }
 
@@ -107,22 +144,18 @@ public class IndexActivity extends ListActivity {
         return (networkInfo != null && networkInfo.isConnected());
     }
 
-    public boolean isSucceed(JSONObject json) throws JSONException{
-        return json.getBoolean(SUCCESS);
-    }
-
-
-    class DownloadArticlesListTask extends AsyncTask<String, Void, String> {
+    class DownloadArticleTask extends AsyncTask<String, Void, String> {
 
 
         private String jsonStr;
-        // contacts JSONArray
-        JSONArray articles = null;
+
+        JSONArray article_content = null;
 
         @Override
         protected void onPreExecute() {
             // Here, show progress bar
             progressBar.setVisibility(View.VISIBLE);
+
         }
         private void authenticate() {
             /* Creates Http Client */
@@ -141,6 +174,7 @@ public class IndexActivity extends ListActivity {
                     .toString();
 
 
+
             /* Creates & sends the POST request */
             Request request = new Request.Builder()
                     .url(url)
@@ -153,18 +187,18 @@ public class IndexActivity extends ListActivity {
                 Response response = client.newCall(request).execute();
                 String string = response.body().string();
 
-
+                Log.v(TAG,string);
                 /* Parses the response body */
                 JSONObject json = new JSONObject(string);
                 boolean  success = json.getBoolean(SUCCESS);
 
                 if (success){
-                    /* Adds pro to the authentication object */
+                    /* Adds token to the authentication object */
                     String token = json.getString(TOKEN);
                     Authentication.init(token);
                 } else {
                     /* Prints the error message */
-                    Log.v(TAG, json.getString(MESSAGE));
+
                 }
 
             } catch (IOException e) {
@@ -179,7 +213,6 @@ public class IndexActivity extends ListActivity {
         protected String doInBackground(String... urls) {
             if(null == Authentication.getToken())
                 authenticate();
-
             String token = Authentication.getToken();
 
             /* Creates Http Client */
@@ -190,6 +223,7 @@ public class IndexActivity extends ListActivity {
             String url = new StringBuilder()
                     .append(BASE_URL)
                     .append(ARTICLES_URL)
+                    .append(IDSTR)
                     .toString();
 
 
@@ -202,12 +236,16 @@ public class IndexActivity extends ListActivity {
             /* Sends the request */
             try {
                 Response response = client.newCall(request).execute();
-                String string = response.body().string();
-                JSONObject json = new JSONObject(string);
-                if(isSucceed(json)){
-                    jsonStr = string;
+                String strresponse = response.body().string();
+                Log.v(TAG, strresponse);
+                JSONObject json = new JSONObject(strresponse);
+                if(json.getBoolean("success")){
+
+                    jsonStr = strresponse;
                 }
-                Log.v(TAG, json.toString());
+                else {
+                    jsonStr=null;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e ) {
@@ -220,52 +258,56 @@ public class IndexActivity extends ListActivity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-            String success=null;
 
 
             if (jsonStr != null) {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
 
-                    articles = jsonObj.getJSONArray(ARTICLES);
+                    JSONObject article = jsonObj.getJSONObject("article");
 
-                    for(int i = 0; i < articles.length(); i++) {
-                        JSONObject c = articles.getJSONObject(i);
-                        String title = c.getString(TAG_TITLE);
-                        String content = c.getString(TAG_CONTENT);
-                        String author = c.getString(TAG_AUTHOR);
-                        String published = DateConverter.convert(c.getString(TAG_PUBLISHED));
-
-                        c.getString(TAG_PUBLISHED);
-                        String id_articles = c.getString(TAG_ID);
-
-                        HashMap<String, String> map = new HashMap<String, String>();
-
-                        map.put(TAG_TITLE,title);
-                        map.put(TAG_CONTENT,content);
-                        map.put(TAG_AUTHOR,author);
-                        map.put(TAG_PUBLISHED,published);
-                        map.put(TAG_ID,id_articles);
-
-                        oslist.add(map);
-
-                        ListAdapter adapter = new SimpleAdapter(IndexActivity.this, oslist,
-                                R.layout.list_item,
-                                new String[] { TAG_TITLE,TAG_CONTENT, TAG_AUTHOR  , TAG_PUBLISHED}, new int[] {
-                                R.id.title,R.id.content, R.id.author,R.id.published});
-                        setListAdapter(adapter);
+                    String jsontitle = article.getString("title");
+                    String jsonauthor = article.getString("author");
+                    String jsonpublished = article.getString("published");
 
 
+
+                    //loading comments
+                    article_content = article.getJSONArray("content");
+
+
+
+                    StringBuilder ss = new StringBuilder("");
+
+
+                    for(int i = 0; i < article_content.length(); i++) {
+                        JSONObject c = article_content.getJSONObject(i);
+                        String header = c.getString("header");
+                        String body =c.getString("body");
+
+                        ss.append("<h1>");
+                        ss.append(header);
+                        ss.append("</h1> <p>");
+                        ss.append(body);
+                        ss.append("</p> ");
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+
+
+                    Log.v(TAG,ss.toString());
+                    setTitle(jsontitle);
+                    author.setText(jsonauthor);
+                    published.setText("date : "+ DateConverter.convert(jsonpublished));
+                    content.setText(Html.fromHtml(ss.toString()));
+
+                }catch(JSONException e){
+                        e.printStackTrace();
+                    }
+
                 }
-            }
-                progressBar.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
 
-
-            //textView.setText(intermediate);
 
         }
     }
+
 }

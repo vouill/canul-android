@@ -4,7 +4,9 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingTop="10dp"
-    android:background="?android:attr/selectableItemBackground">
+    android:background="?android:attr/selectableItemBackground" >
+    <!--android:onClick="showArticle"-->
+
 
     <!-- Name Label -->
 
@@ -18,8 +20,6 @@
         android:textStyle="bold"
         android:text="title"
         android:textAllCaps="true"
-
-
         />
 
     <RelativeLayout

@@ -17,4 +17,12 @@
 
         <item name="android:navigationBarColor">@color/primary_dark</item>
     </style>
+
+    <style name="FacebookLoginButton">
+            <item name="android:textSize">12sp</item>
+            <item name="android:layout_marginTop">10dp</item>
+            <item name="android:layout_marginBottom">10dp</item>
+            <item name="android:layout_gravity">center_horizontal</item>
+
+    </style>
 </resources>

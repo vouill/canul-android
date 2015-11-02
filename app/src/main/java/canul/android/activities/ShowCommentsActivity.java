@@ -22,15 +22,17 @@ import java.util.List;
 import canul.android.DateConverter;
 import canul.android.R;
 import canul.android.adapters.CommentsAdapter;
-import canul.android.interfaces.CommentsTaskInterface;
+import canul.android.interfaces.TaskInterface;
 import canul.android.models.Comment;
 import canul.android.tasks.CommentsTask;
 
-public class CommentsActivity extends Activity implements CommentsTaskInterface {
+public class ShowCommentsActivity extends Activity implements TaskInterface {
 
-    public static String TAG = CommentsActivity.class.getName();
+    public static String TAG = ShowCommentsActivity.class.getName();
     public static String COMMENTS_TAG = "comments";
     public static String CONTENT_TAG = "content";
+    public static String ID_TAG = "_id";
+
     public static String AUTHOR_TAG = "author";
     public static String PUBLISHED_TAG = "published";
     private ProgressBar progressBar;
@@ -44,7 +46,7 @@ public class CommentsActivity extends Activity implements CommentsTaskInterface 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_comment);
+        setContentView(R.layout.activity_show_comments);
 
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
@@ -62,8 +64,9 @@ public class CommentsActivity extends Activity implements CommentsTaskInterface 
         new CommentsTask(this).execute();
     }
 
+
     public void postComment(View view) {
-        Intent intent = new Intent(getApplicationContext(), CommentPost.class);
+        Intent intent = new Intent(getApplicationContext(), EditCommentActivity.class);
         intent.putExtra("_id", "561e23026f8e19f41074ee21");
         startActivity(intent);
     }
@@ -71,7 +74,7 @@ public class CommentsActivity extends Activity implements CommentsTaskInterface 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_comment, menu);
+        getMenuInflater().inflate(R.menu.simple_actions, menu);
         return true;
     }
 
@@ -83,9 +86,9 @@ public class CommentsActivity extends Activity implements CommentsTaskInterface 
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+      //  if (id == R.id.action_settings) {
+      //      return true;
+      //  }
 
         return super.onOptionsItemSelected(item);
     }
@@ -100,7 +103,8 @@ public class CommentsActivity extends Activity implements CommentsTaskInterface 
                 String author = comment.getString(AUTHOR_TAG);
                 String published = DateConverter.convert(comment.getString(PUBLISHED_TAG));
                 String content = comment.getString(CONTENT_TAG);
-                comments.add(new Comment(author,published,content));
+                String id = comment.getString(ID_TAG);
+                comments.add(new Comment(id,author,published,content));
             }
         } catch (JSONException e) {
             e.printStackTrace();
