@@ -30,9 +30,9 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public int getItemViewType(int position) {
         int viewType;
-        if(objects.size() == 0)
+        if (objects.size() == 0)
             return TYPE_COMMENT;
-        if(objects.get(position) instanceof Article){
+        if (objects.get(position) instanceof Article) {
             viewType = TYPE_ARTICLE;
         } else {
             viewType = TYPE_COMMENT;
@@ -83,9 +83,11 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         notifyDataSetChanged();
     }
 
-    public void setComments(List<Comment> comments){
-        this.objects.addAll(comments);
-        notifyDataSetChanged();
+    public void setComments(List<Comment> comments) {
+        if (comments.size() > 0) {
+            this.objects.addAll(comments);
+            notifyDataSetChanged();
+        }
     }
 
     @Override

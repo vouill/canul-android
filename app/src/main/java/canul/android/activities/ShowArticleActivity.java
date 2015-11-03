@@ -107,6 +107,8 @@ public class ShowArticleActivity extends Activity implements EndlessScrollInterf
         if(json.has("comments")){
             try {
                 JSONArray array = json.getJSONArray(COMMENTS_TAG);
+                //TODO tidy this
+                comments.clear();
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject comment = array.getJSONObject(i);
                     String author = comment.getString(AUTHOR_TAG);
@@ -122,14 +124,14 @@ public class ShowArticleActivity extends Activity implements EndlessScrollInterf
             Log.v(TAG, "comments found");
         } else if (json.has("article")){
             try {
-            JSONObject article = json.getJSONObject(ARTICLE_TAG);
-            String author = article.getString(AUTHOR_TAG);
-            String id = article.getString(ID_TAG);
-            String published = DateConverter.convert(article.getString(PUBLISHED_TAG));
-            String content = article.getString(CONTENT_TAG);
-            String title = article.getString(TITLE_TAG);
-            adapter.setArticle(new Article(id,  title,  author,  published,  content));
-            Log.v(TAG, "article found");
+                JSONObject article = json.getJSONObject(ARTICLE_TAG);
+                String author = article.getString(AUTHOR_TAG);
+                String id = article.getString(ID_TAG);
+                String published = DateConverter.convert(article.getString(PUBLISHED_TAG));
+                String content = article.getString(CONTENT_TAG);
+                String title = article.getString(TITLE_TAG);
+                adapter.setArticle(new Article(id,  title,  author,  published,  content));
+                Log.v(TAG, "article found");
             }
             catch( JSONException e) {
                 e.printStackTrace();

@@ -55,7 +55,7 @@ public class CommentsTask extends CanulTask{
                     .append(id)
                     .toString();
 
-
+            Log.v(TAG, Authentication.getToken());
             /* Creates & sends the POST request */
             Request request = new Request.Builder()
                     .url(url)
