@@ -1,9 +1,14 @@
 package canul.android.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +69,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 ArticleViewHolder articleViewHolder = (ArticleViewHolder) holder;
                 articleViewHolder.getAuthorTextView().setText(article.getAuthor());
                 articleViewHolder.getTitleTextView().setText(article.getTitle());
-                articleViewHolder.getContentTextView().setText(article.getExtract());
+                articleViewHolder.getContentTextView().setText(Html.fromHtml(JSONtoHTML(article.getExtract())));
                 articleViewHolder.getPublishedTextView().setText(article.getPublished());
 
                 break;
@@ -76,6 +81,39 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 commentViewHolder.getPublishedTextView().setText(comment.getPublished());
 
         }
+    }
+
+    public String JSONtoHTML(String json){
+        StringBuilder ss = new StringBuilder("");
+        Log.v(TAG,json);
+        try {
+            JSONArray article_content = new JSONArray(json);
+
+
+
+
+
+            for(int i = 0; i < article_content.length(); i++) {
+                JSONObject c = article_content.getJSONObject(i);
+                String header = c.getString("header");
+                String body =c.getString("body");
+
+                ss.append("<h1>");
+                ss.append(header);
+                ss.append("</h1> <p>");
+                ss.append(body);
+                ss.append("</p> ");
+            }
+            Log.v(TAG,ss.toString());
+
+
+
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (ss.toString());
     }
 
     public void setArticle(Article article) {
