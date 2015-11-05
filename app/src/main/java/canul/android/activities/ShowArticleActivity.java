@@ -103,7 +103,6 @@ public class ShowArticleActivity extends Activity implements EndlessScrollInterf
 
     }
     public void postComment(View v) {
-
         Intent intent = new Intent(this, EditCommentActivity.class);
         intent.putExtra(ID_TAG,idstr);
         startActivity(intent);

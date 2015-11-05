@@ -24,10 +24,14 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import canul.android.Authentication;
 import canul.android.R;
+import canul.android.interfaces.TaskInterface;
+import canul.android.tasks.PostCommentTask;
 
-public class EditCommentActivity extends Activity {
+public class EditCommentActivity extends Activity implements TaskInterface {
 
 
     //URL
@@ -45,14 +49,11 @@ public class EditCommentActivity extends Activity {
     private static final String TAG = "ShowExtractsActivity";
 
     private static final String TAG_ID = "_id";
-    private ProgressBar progressBar;
-
-    private EditText authorinput;
-    private EditText commentinput;
 
 
-    private static String comment;
-    private static String author;
+    @Bind(R.id.progress_bar) ProgressBar progressBar;
+    @Bind(R.id.author) EditText authorEditText;
+    @Bind(R.id.comment) EditText commentEditText;
 
     static String jsonStringPost;
 
@@ -64,12 +65,7 @@ public class EditCommentActivity extends Activity {
         Intent in = getIntent();
         IDSTR = in.getStringExtra(TAG_ID);
 
-
-        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        authorinput = (EditText) findViewById(R.id.author);
-        commentinput = (EditText) findViewById(R.id.comment);
-
-
+        ButterKnife.bind(this);
     }
 
 
@@ -88,147 +84,33 @@ public class EditCommentActivity extends Activity {
     }
     public void sendComm(View v) {
 
-        jsonStringPost=ToJson(authorinput.getText().toString(),commentinput.getText().toString());
+        jsonStringPost=ToJson(authorEditText.getText().toString(), commentEditText.getText().toString());
 
-        new PostCommentTask().execute();
+        new PostCommentTask(this).execute(IDSTR, jsonStringPost);
         Intent intent = new Intent(this, ShowArticleActivity.class);
         intent.putExtra(TAG_ID,IDSTR);
         startActivity(intent);
+
+
     }
 
+    @Override
+    public void onSuccess(JSONObject json) {
 
-    class PostCommentTask extends AsyncTask<String, Void, String> {
-        public final MediaType JSON
-                = MediaType.parse("application/json; charset=utf-8");
+    }
 
+    @Override
+    public void onFailure(JSONObject json) {
 
-        private String jsonStr;
+    }
 
-        JSONArray comments = null;
+    @Override
+    public void setProgressBar() {
 
-        @Override
-        protected void onPreExecute() {
-            // Here, show progress bar
-            progressBar.setVisibility(View.VISIBLE);
+    }
 
-        }
+    @Override
+    public void dismissProgressBar() {
 
-        private void authenticate() {
-            /* Creates Http Client */
-            OkHttpClient client = new OkHttpClient();
-
-            /* Creates the request body */
-            RequestBody body = new FormEncodingBuilder()
-                    .add("name", "user")
-                    .add("password", "password")
-                    .build();
-
-            /* Creates Authentication URL */
-            String url = new StringBuilder()
-                    .append(BASE_URL)
-                    .append(AUTHENTICATE_URL)
-                    .toString();
-
-
-
-            /* Creates & sends the POST request */
-            Request request = new Request.Builder()
-                    .url(url)
-                    .post(body)
-                    .build();
-
-            try {
-
-                /* Sends the request and waits for the response */
-                Response response = client.newCall(request).execute();
-                String string = response.body().string();
-
-
-                /* Parses the response body */
-                JSONObject json = new JSONObject(string);
-                boolean success = json.getBoolean(SUCCESS);
-
-                if (success) {
-                    /* Adds token to the authentication object */
-                    String token = json.getString(TOKEN);
-                    Authentication.init(token);
-                } else {
-                    /* Prints the error message */
-
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-        @Override
-        protected String doInBackground(String... urls) {
-            if (null == Authentication.getToken())
-                authenticate();
-
-            String token = Authentication.getToken();
-
-
-            OkHttpClient client = new OkHttpClient();
-
-            // Creates Authentication URL
-            String url = new StringBuilder()
-                    .append(BASE_URL)
-                    .append(COMMENTS_URL)
-                    .append(IDSTR)
-                    .toString();
-            Log.v(TAG, url);
-            Log.v(TAG, jsonStringPost);
-
-            RequestBody body = RequestBody.create(JSON, jsonStringPost);
-            Request request = new Request.Builder()
-                    .url(url)
-                    .header("x-access-token", token)
-                    .header("Content-Type", "application/json")
-                    .post(body)
-                    .build();
-            Response response = null;
-            try {
-                response = client.newCall(request).execute();
-
-                String result = response.body().string();
-                Log.v(TAG, result);
-                return result;
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-
-
-            return null;
-        }
-
-        // onPostExecute displays the results of the AsyncTask.
-        @Override
-        protected void onPostExecute(String result) {
-
-
-            Context context = getApplicationContext();
-            CharSequence text = "comment sent";
-            int duration = Toast.LENGTH_SHORT;
-
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
-
-
-
-
-            progressBar.setVisibility(View.GONE);
-
-
-
-        }
     }
 }
