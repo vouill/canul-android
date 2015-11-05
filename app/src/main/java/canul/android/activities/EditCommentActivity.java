@@ -34,19 +34,7 @@ import canul.android.tasks.PostCommentTask;
 public class EditCommentActivity extends Activity implements TaskInterface {
 
 
-    //URL
-    private static final String BASE_URL = "http://dev.canul.fr/api/";
-    private static final String AUTHENTICATE_URL = "authenticate";
-    private static final String ARTICLES_URL = "articles/";
-    private static final String COMMENTS_URL = "comments/byArticle/";
     private static String IDSTR;
-
-
-    // JSON node key
-    private static final String TOKEN = "token";
-    private static final String SUCCESS = "success";
-    private static final String MESSAGE = "message";
-    private static final String TAG = "ShowExtractsActivity";
 
     private static final String TAG_ID = "_id";
 
@@ -66,6 +54,7 @@ public class EditCommentActivity extends Activity implements TaskInterface {
         IDSTR = in.getStringExtra(TAG_ID);
 
         ButterKnife.bind(this);
+
     }
 
 
@@ -78,30 +67,21 @@ public class EditCommentActivity extends Activity implements TaskInterface {
                 .append(comment)
                 .append("\"}")
                 .toString();
-
-
         return jsonstring;
     }
     public void sendComm(View v) {
-
         jsonStringPost=ToJson(authorEditText.getText().toString(), commentEditText.getText().toString());
-
         new PostCommentTask(this).execute(IDSTR, jsonStringPost);
-        Intent intent = new Intent(this, ShowArticleActivity.class);
-        intent.putExtra(TAG_ID,IDSTR);
-        startActivity(intent);
-
-
     }
 
     @Override
     public void onSuccess(JSONObject json) {
-
+        this.finish();
     }
 
     @Override
     public void onFailure(JSONObject json) {
-
+        this.finish();
     }
 
     @Override

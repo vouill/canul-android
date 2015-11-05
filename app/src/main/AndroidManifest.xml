@@ -34,7 +34,8 @@
 
         <activity
             android:name=".activities.EditCommentActivity"
-            android:label="@string/title_activity_comment_post" />
+            android:label="@string/title_activity_comment_post"
+            />
         <activity
             android:name=".activities.LoginActivity"
             android:label="@string/title_activity_login"/>
