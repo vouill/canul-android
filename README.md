@@ -1,23 +1,41 @@
-# canul-android
+# Le Canul
 
-Application android du journal canul
+* Charles-Antoine Sohier
+* Thibaud Vouillon
 
-# Partie 1
-- [x] Authentification auprès du serveur (http://dev.canul.fr/api)
-- [ ] Activité index: Affichage de la liste d'articles
-  - [x] Affichage sous forme de liste
-  - [x] Récupération des articles depuis le serveur
-  - [ ] Récupération de thumbnails depuis le serveur
-  - [ ] Pagination et infinite scroll
-- [ ] Activité show: Affichage d'un article
-  - [x] Récupération d'un article depuis le serveur
-  - [ ] Récupération de l'image
-  
+Nous avons décidé de développer une application pour un site internet qui a été créé cet été. Le site internet se présente sous la forme d'un journal où l'on peut lire des articles et poster des commentaires.
 
-# Partie 2
-- [ ] Activité edit: Ajout, Modification d'un article
-- [ ] Ajout des commentaires
+## Fonctionnalités
 
-#Partie 3
-- [ ] Cache pour navigation offline
+Les différentes fonctionnalités implémentées dans le projet sont les suivantes:
 
+* Affichage de la liste des articles
+* Affichage d'un article accompagné de sa liste de commentaire
+* Création de commentaire
+* Login via Facebook
+
+Nous souhaiterions également développé les fonctionnalités suivantes dans un avenir proche:
+
+* Notification et badges de nouvel article non lu
+* Login et Signin via l'app
+* Affichages des commentaires par utilisateur
+
+## Points forts
+
+Les points forts de cette application sont les suivants:
+
+* L'affichage des extraits d'article se fait à l'aide de RecyclerView
+* L'affichage d'un article et de ses commentaires se fait également à l'aide d'un RecyclerView, cependant celui-ci traite les données de manière differente selon leur type.
+* L'affichage des extraits d'article se fait à l'aide d'un EndlessScroll ce qui permet de s'affranchir de la pagination
+* De même pour l'affichage des commentaires
+* L'authentification auprès de l'API se fait à l'aide de challenge
+
+
+## Points faibles
+
+Certaines fonctionnalités ne sont pas présentes:
+
+* Le login via facebook n'est pas utilisé
+* Les connexions à l'API ne sont pas en https
+* Il n'y a pas de systeme d'utilisateur pour le moment
+* Les images ne sont pas traitées du tout
