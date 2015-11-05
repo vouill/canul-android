@@ -96,7 +96,8 @@ public class ShowArticleActivity extends Activity implements EndlessScrollInterf
 
     @Override
     public void onLoadMore() {
-        new CommentsTask(this).execute(comments.get(comments.size()-1).getId());
+        String[] params = {idstr, comments.get(comments.size()-1).getId()};
+        new CommentsTask(this).execute(params);
     }
 
     @Override

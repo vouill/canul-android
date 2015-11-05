@@ -42,7 +42,10 @@ public class CommentsTask extends CanulTask{
         super.doInBackground();
 
         String id = params[0];
-
+        String last = null;
+        if(params.length > 1) {
+             last = params[1];
+        }
         if(id != null){
              /* Creates Http Client */
             OkHttpClient client = new OkHttpClient();
@@ -57,11 +60,14 @@ public class CommentsTask extends CanulTask{
 
             Log.v(TAG, Authentication.getToken());
             /* Creates & sends the POST request */
-            Request request = new Request.Builder()
+            Request.Builder builder = new Request.Builder()
                     .url(url)
-                    .header("x-access-token", Authentication.getToken())
-                    .build();
+                    .header("x-access-token", Authentication.getToken());
 
+            if(last != null)
+                builder.addHeader("last-comment", last);
+
+            Request request = builder.build();
             /* Sends the request */
             try {
                 Response response = client.newCall(request).execute();
