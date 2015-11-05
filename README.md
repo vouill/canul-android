@@ -29,6 +29,7 @@ Les points forts de cette application sont les suivants:
 * L'affichage des extraits d'article se fait à l'aide d'un EndlessScroll ce qui permet de s'affranchir de la pagination
 * De même pour l'affichage des commentaires
 * L'authentification auprès de l'API se fait à l'aide de challenge
+* Très peu d'actions sont nécessaires pour lire un article et ses commentaires
 
 
 ## Points faibles
@@ -39,3 +40,5 @@ Certaines fonctionnalités ne sont pas présentes:
 * Les connexions à l'API ne sont pas en https
 * Il n'y a pas de systeme d'utilisateur pour le moment
 * Les images ne sont pas traitées du tout
+* Les animations entre les pages n'ont pas toutes été faites
+* 
