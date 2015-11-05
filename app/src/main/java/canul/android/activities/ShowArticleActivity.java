@@ -80,6 +80,7 @@ public class ShowArticleActivity extends Activity implements EndlessScrollInterf
         recyclerView.setOnScrollListener(new ArticlesEndlessScrollListener(manager, this));
         comments = new ArrayList<>();
 
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         if (isConnected()) {
             new ArticleTask(this).execute(id);
             new CommentsTask(this).execute(id);
