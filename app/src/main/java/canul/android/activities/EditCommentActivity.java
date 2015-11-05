@@ -86,6 +86,16 @@ public class EditCommentActivity extends Activity {
 
         return jsonstring;
     }
+    public void sendComm(View v) {
+
+        jsonStringPost=ToJson(authorinput.getText().toString(),commentinput.getText().toString());
+
+        new PostCommentTask().execute();
+        Intent intent = new Intent(this, ShowArticleActivity.class);
+        intent.putExtra(TAG_ID,IDSTR);
+        startActivity(intent);
+    }
+
 
     class PostCommentTask extends AsyncTask<String, Void, String> {
         public final MediaType JSON

@@ -3,12 +3,28 @@
     android:layout_height="match_parent">
 
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical"
-        android:id="@+id/recycler_view">
-    </android.support.v7.widget.RecyclerView>
+
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:id="@+id/recycler_view"
+            android:paddingBottom="40dp"
+            android:clipToPadding="false"
+            >
+        </android.support.v7.widget.RecyclerView>
+
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Post a comment ..."
+            android:gravity="left|center_vertical"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/sendbutton"
+            android:onClick="postComment"/>
 
 
     <!-- ProgressBar drawn last to be on top-->
@@ -18,5 +34,4 @@
         android:layout_height="100dp"
         android:layout_centerInParent="true"
         android:visibility="gone" />
-
 </RelativeLayout>

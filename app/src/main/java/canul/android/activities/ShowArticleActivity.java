@@ -45,6 +45,7 @@ public class ShowArticleActivity extends Activity implements EndlessScrollInterf
     private static final String EXTRACT_TAG = "extract";
     public static String COMMENTS_TAG = "comments";
     public static String CONTENT_TAG = "content";
+    public static String idstr;
 
     private RecyclerView recyclerView;
     private ArticleAdapter adapter;
@@ -64,7 +65,7 @@ public class ShowArticleActivity extends Activity implements EndlessScrollInterf
 
         // Get JSON values from previous intent
         String id = in.getStringExtra(ID_TAG);
-
+        idstr=id;
 
         Log.v(TAG, id);
 
@@ -101,6 +102,13 @@ public class ShowArticleActivity extends Activity implements EndlessScrollInterf
     public void onClick(View v) {
 
     }
+    public void postComment(View v) {
+
+        Intent intent = new Intent(this, EditCommentActivity.class);
+        intent.putExtra(ID_TAG,idstr);
+        startActivity(intent);
+    }
+
 
     @Override
     public void onSuccess(JSONObject json) {
