@@ -5,7 +5,7 @@
 
 Nous avons décidé de développer une application pour un site internet qui a été créé cet été. Le site internet se présente sous la forme d'un journal où l'on peut lire des articles et poster des commentaires.
 
-#Presentation 
+###Presentation 
 https://youtu.be/gFGrLXx1eiU
 
 ## Fonctionnalités
